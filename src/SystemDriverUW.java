@@ -74,11 +74,11 @@ public class SystemDriverUW {
 		// Load queries
 		HashMap<String, KBP2011TemporalQuery> queries = null;
 		if (queryType == 0) {
-			// Training
+			// ???
 			queries = Utils.loadKBP2011TemporalSFQueries(
 					developmentTemporalQueriesFile, developmentTuplesFile);
 		} else if (queryType == 1) {
-			// Eval
+			// Diagnostic
 			queries = Utilities.loadOfficialKBP2011SFOutputAsTemporalSFQueries(
 					testTemporalQueriesFile, sfOutputFile);
 		} else {
