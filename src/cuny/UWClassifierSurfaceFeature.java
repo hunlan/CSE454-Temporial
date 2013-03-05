@@ -100,7 +100,7 @@ public HashMap<String, SlotTime> run(HashMap<String, KBP2011TemporalQuery> queri
 			
 			/* FOR EACH SLOT */
 			for(SlotName currentSlot : SlotName.values()){
-				
+				// We care about 
 				if(!(currentSlot.equals(SlotName.per_employee_of) ||
 						currentSlot.equals(SlotName.per_member_of) ||
 						currentSlot.equals(SlotName.org_top_members_employees) ||
@@ -108,7 +108,7 @@ public HashMap<String, SlotTime> run(HashMap<String, KBP2011TemporalQuery> queri
 						currentSlot.equals(SlotName.per_stateorprovinces_of_residence) ||
 						currentSlot.equals(SlotName.per_cities_of_residence) ||
 						currentSlot.equals(SlotName.per_spouse) ||
-						currentSlot.equals(SlotName.per_title))){
+						currentSlot.equals(SlotName.per_title))){					
 					continue;
 				}
 				
@@ -158,21 +158,21 @@ public HashMap<String, SlotTime> run(HashMap<String, KBP2011TemporalQuery> queri
 						
 						if(!slotName.equals(currentInfSlotName)) continue;
 
-						String queryInfo = "\n"+query.getName()+"\t"+infSlot.getSlotName()+"\t"+infSlot.getSlotFill();
+						String queryInfo = query.getQueryid() + "\n"+query.getName()+"\t"+infSlot.getSlotName()+"\t"+infSlot.getSlotFill();
 						
 						System.out.println("queryInfo: " + queryInfo);
 						
 						
 						//Get the relevant documents to the query
 						HashSet<SourceDocument> docs = getRelevantDocuments(query, infSlot, topDocumentsFromIndex, useEntitySourceDocument);
-						//System.out.println("docs: " + docs);
+						 // System.out.println("docs: " + docs);
 						
 						//Get relevant sentences in the documents
 						//System.out.print("\t- selectSentences... ");
 						HashMap<AnnotatedDocument, HashSet<Sentence>> annotatedDoc2sentences = selectSentences(query, infSlot, docs); 
 						int numSent = 0;
 						for(HashSet<Sentence> sentences : annotatedDoc2sentences.values()) numSent += sentences.size();
-						System.out.print(numSent+"\n");
+						// System.out.print(numSent+"\n");
 						
 						//Represent each temporal expression as a classification instance, output to a file, and get map from instance_ID to timex namedEntity 
 						HashMap<String, NamedEntity> iid2timex = printInstances(writer_instances, query, infSlot, annotatedDoc2sentences);
@@ -201,10 +201,10 @@ public HashMap<String, SlotTime> run(HashMap<String, KBP2011TemporalQuery> queri
 				System.out.println("Running classifier for "+currentInfSlotName);
 				
 				// get model file, output path, and perform classification
-				String outputClassificationFile = "data/systemOutput/" + currentInfSlotName;
+				String outputClassificationFile = "../mylovelydata/systemOutput/" + currentInfSlotName;//"data/systemOutput/" + currentInfSlotName;
 				String modelFilePath = modelsPath.getAbsolutePath() + File.separatorChar + Model_File_Prefix + currentInfSlotName;	    // file path for libsvm model
 				String featureFilepath = modelsPath.getAbsolutePath() + File.separatorChar + Feature_File_Prefix + currentInfSlotName; 	// file path for .ser file of training data
-				String patternFilePath = modelsPath.getAbsolutePath() + File.separatorChar + currentInfSlotName + "_patterns";
+				String patternFilePath = "/kbp/assignments/mylovelydata/patterns/patterns/per-countries_of_residence";// modelsPath.getAbsolutePath() + File.separatorChar + currentInfSlotName + "_patterns";
 				
 				// TODO Added
 				System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>> feature: " + featureFilepath);
@@ -216,7 +216,8 @@ public HashMap<String, SlotTime> run(HashMap<String, KBP2011TemporalQuery> queri
 				HashMap<String, ClassificationResult> instanceID2classification = SurfaceFeatureSVMWrapper.readClassificationResults(outputClassificationFile);
 			
 				// Qi: aggregate results
-				aggregateResults(queries, results, currentInfSlotName, instanceID2timex, key2instanceID, instanceID2classification);	
+				aggregateResults(queries, results, currentInfSlotName, instanceID2timex, key2instanceID, instanceID2classification);
+				break;//TODO I added this
 			}
 			
 			// Qi: refactor this as a method

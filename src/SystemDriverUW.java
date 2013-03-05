@@ -16,6 +16,7 @@ import edu.cuny.qc.cs.kbp2011.tie.aggregation.Aggregator;
 import edu.cuny.qc.cs.kbp2011.tie.aggregation.AggregatorBasic;
 import edu.cuny.qc.cs.kbp2011.tie.aggregation.AggregatorBiasHolds;
 import edu.cuny.qc.cs.kbp2011.tie.aggregation.AggregatorDiscardNone;
+import edu.cuny.qc.cs.kbp2011.tie.baselines.DCTBaseline;
 import edu.cuny.qc.cs.kbp2011.tie.core.KBP2011TemporalQuery;
 import edu.cuny.qc.cs.kbp2011.tie.core.TemporalSFSystem;
 import edu.cuny.qc.cs.kbp2011.tie.kernel.ClassifierDepKernel;
@@ -23,10 +24,10 @@ import edu.cuny.qc.cs.kbp2011.tie.kernel.ClassifierDepKernel;
 public class SystemDriverUW {
 	private static final boolean isCommandLine = false;
 
-	private static final int CLASSIFIER_TYPE = 0;
-	private static final int AGGREGATOR_TYPE = 0;
-	private static final int QUERY_TYPE = 0;
-	private static final int DOCUMENT_NUM = 0;
+	private static final int CLASSIFIER_TYPE 	= 0;
+	private static final int AGGREGATOR_TYPE 	= 0;
+	private static final int QUERY_TYPE 		= 0;
+	private static final int DOCUMENT_NUM 		= 0;
 
 	public static void main(String[] args) throws IOException {
 
@@ -74,11 +75,10 @@ public class SystemDriverUW {
 		// Load queries
 		HashMap<String, KBP2011TemporalQuery> queries = null;
 		if (queryType == 0) {
-			// ???
+			// Load querie map with tuples and queries
 			queries = Utils.loadKBP2011TemporalSFQueries(
 					developmentTemporalQueriesFile, developmentTuplesFile);
 		} else if (queryType == 1) {
-			// Diagnostic
 			queries = Utilities.loadOfficialKBP2011SFOutputAsTemporalSFQueries(
 					testTemporalQueriesFile, sfOutputFile);
 		} else {
@@ -114,6 +114,7 @@ public class SystemDriverUW {
 		boolean propagateLocations = false;
 		boolean useEntityDocument = false;
 		// This is what we want <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+		// Index 0, using classifier 1
 		TemporalSFSystem system = new UWClassifierSurfaceFeature(
 				sourceDataSearcher, annotatedDocsPath, titlesGazFile,
 				surfaceFeature_modelsPath, 1, aggregator, document_num,
@@ -126,14 +127,18 @@ public class SystemDriverUW {
 		systems.add(system);
 
 		// run for system
-		system = systems.get(classifierType);
+		system = systems.get(classifierType); // 0 ==> UWClassifierSurfaceFeature
 
+		//system = new DCTBaseline(sourceDataSearcher, annotatedDocsPath, 0, false);
+		
 		HashMap<String, SlotTime> queryKey2answer = system.run(queries);
 		String systemName = system.getClass().getSimpleName();
 		// Write results
 		File outputFile = new File(outputPath, systemName + ".out");
 		Utilities.saveKBP2011TemporalSFOutput(systemName, queries,
 				queryKey2answer, outputFile);
+		
+		System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>\n QueryKey2Ans: " + queryKey2answer);
 
 		// Evaluate the system output
 		/*
